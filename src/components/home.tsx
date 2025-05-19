@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ArbitrageGrid from "./ArbitrageGrid";
 import FilterControls from "./FilterControls";
@@ -47,7 +47,7 @@ export default function Home() {
       <Card className="w-full bg-card">
         <CardHeader className="pb-4">
           <CardTitle className="text-2xl md:text-3xl font-bold text-center">
-
+            <h1>Arbitrage Finder</h1>
           </CardTitle>
         </CardHeader>
         <CardContent>

@@ -11,6 +11,7 @@ interface BookmakerOdds {
     home: number;
     away: number;
     draw?: number;
+    point?: number;
   };
 }
 
@@ -20,6 +21,7 @@ interface ArbitrageOpportunity {
     bookmaker: string;
     team: string;
     odds: number;
+    point?: number;
     stake: number;
     return: number;
   }[];
@@ -33,6 +35,7 @@ interface GameRowProps {
   sport: string;
   bookmakerOdds: BookmakerOdds[];
   arbitrageOpportunity?: ArbitrageOpportunity;
+  marketType?: string;
 }
 
 const GameRow = ({
@@ -43,6 +46,7 @@ const GameRow = ({
   sport,
   bookmakerOdds,
   arbitrageOpportunity,
+  marketType = "h2h",
 }: GameRowProps) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -52,6 +56,20 @@ const GameRow = ({
   // Determine if there's an arbitrage opportunity
   const hasArbitrageOpportunity =
     arbitrageOpportunity && arbitrageOpportunity.profit > 0;
+
+  // Format market type for display
+  const getMarketDisplay = () => {
+    switch (marketType) {
+      case "h2h":
+        return "Moneyline";
+      case "spreads":
+        return "Point Spread";
+      case "totals":
+        return "Over/Under";
+      default:
+        return marketType;
+    }
+  };
 
   return (
     <Card
@@ -80,7 +98,7 @@ const GameRow = ({
               {homeTeam} vs {awayTeam}
             </h3>
             <div className="text-sm text-gray-500">
-              <span>{sport}</span> • <span>{formattedDate}</span>
+              <span>{sport}</span> • <span>{formattedDate}</span> • <span>{getMarketDisplay()}</span>
             </div>
           </div>
         </div>
@@ -102,12 +120,22 @@ const GameRow = ({
                       <div className="text-xs text-gray-500">{homeTeam}</div>
                       <div className="font-semibold">
                         {bookmaker.odds.home.toFixed(2)}
+                        {bookmaker.odds.point !== undefined && (
+                          <span className="text-gray-500 ml-1">
+                            ({bookmaker.odds.point > 0 ? "+" : ""}{bookmaker.odds.point})
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div>
                       <div className="text-xs text-gray-500">{awayTeam}</div>
                       <div className="font-semibold">
                         {bookmaker.odds.away.toFixed(2)}
+                        {bookmaker.odds.point !== undefined && (
+                          <span className="text-gray-500 ml-1">
+                            ({bookmaker.odds.point > 0 ? "+" : ""}{bookmaker.odds.point})
+                          </span>
+                        )}
                       </div>
                     </div>
                     {bookmaker.odds.draw !== undefined && (
@@ -156,6 +184,11 @@ const GameRow = ({
                         <span className="font-semibold">
                           {bet.odds.toFixed(2)}
                         </span>
+                        {bet.point !== undefined && (
+                          <span className="text-gray-500 ml-1">
+                            ({bet.point > 0 ? "+" : ""}{bet.point})
+                          </span>
+                        )}
                       </span>
                       <span>
                         Stake:{" "}

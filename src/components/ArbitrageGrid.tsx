@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import GameRow from "./GameRow";
 import {
   getOdds,
@@ -201,6 +192,7 @@ const ArbitrageGrid = ({
                     awayTeam={game.away_team}
                     startTime={game.commence_time}
                     sport={game.sport_title}
+                    marketType={selectedMarket}
                     bookmakerOdds={game.bookmakers.map((bm) => ({
                       bookmaker: bm.title,
                       odds: {
@@ -215,6 +207,9 @@ const ArbitrageGrid = ({
                         draw: bm.markets[0]?.outcomes.find(
                           (o) => o.name === "Draw",
                         )?.price,
+                        point: bm.markets[0]?.outcomes.find(
+                          (o) => o.name === game.home_team,
+                        )?.point,
                       },
                     }))}
                     arbitrageOpportunity={game.arbitrageOpportunity}
@@ -242,6 +237,7 @@ const ArbitrageGrid = ({
                     awayTeam={game.away_team}
                     startTime={game.commence_time}
                     sport={game.sport_title}
+                    marketType={selectedMarket}
                     bookmakerOdds={game.bookmakers.map((bm) => ({
                       bookmaker: bm.title,
                       odds: {
@@ -256,6 +252,9 @@ const ArbitrageGrid = ({
                         draw: bm.markets[0]?.outcomes.find(
                           (o) => o.name === "Draw",
                         )?.price,
+                        point: bm.markets[0]?.outcomes.find(
+                          (o) => o.name === game.home_team,
+                        )?.point,
                       },
                     }))}
                     arbitrageOpportunity={game.arbitrageOpportunity}

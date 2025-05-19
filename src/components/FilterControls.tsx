@@ -51,9 +51,9 @@ const FilterControls = ({
     { id: "h2h", name: "Moneyline (H2H)" },
     { id: "spreads", name: "Point Spreads" },
     { id: "totals", name: "Totals (Over/Under)" },
-    { id: "player_points", name: "Player Points" },
-    { id: "player_rebounds", name: "Player Rebounds" },
-    { id: "player_assists", name: "Player Assists" },
+    // { id: "player_points", name: "Player Points" },
+    // { id: "player_rebounds", name: "Player Rebounds" },
+    // { id: "player_assists", name: "Player Assists" },
   ];
 
   useEffect(() => {
