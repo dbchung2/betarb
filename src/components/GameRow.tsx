@@ -4,27 +4,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ArbitrageOpportunityType } from "../types/odds";
 
 interface BookmakerOdds {
   bookmaker: string;
+  link: string;
   odds: {
     home: number;
     away: number;
     draw?: number;
     point?: number;
   };
-}
-
-interface ArbitrageOpportunity {
-  profit: number;
-  bets: {
-    bookmaker: string;
-    team: string;
-    odds: number;
-    point?: number;
-    stake: number;
-    return: number;
-  }[];
 }
 
 interface GameRowProps {
@@ -34,7 +24,7 @@ interface GameRowProps {
   startTime: string;
   sport: string;
   bookmakerOdds: BookmakerOdds[];
-  arbitrageOpportunity?: ArbitrageOpportunity;
+  arbitrageOpportunity?: ArbitrageOpportunityType;
   marketType?: string;
 }
 
@@ -113,7 +103,7 @@ const GameRow = ({
             <h4 className="text-sm font-semibold mb-2">Bookmaker Odds</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {bookmakerOdds.map((bookmaker, index) => (
-                <div key={index} className="p-3 border rounded-md">
+                <div key={index} className="p-3 border rounded-md" onClick={() => window.open(bookmaker.link, "_blank")}>
                   <div className="font-medium">{bookmaker.bookmaker}</div>
                   <div className="grid grid-cols-2 gap-2 mt-2">
                     <div>

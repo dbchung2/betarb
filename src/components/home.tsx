@@ -1,46 +1,42 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SportType as ApiSport } from "@/types/odds";
 import ArbitrageGrid from "./ArbitrageGrid";
 import FilterControls from "./FilterControls";
-import { Sport as ApiSport } from "@/services/oddsApi";
-
-// Define the sort options
-export type SortOption = "profit" | "sport" | "time";
+import useGetSports from "../hooks/useGetSports";
+import useGetSportsOdds from "../hooks/useGetOdds";
+import { setSportsGroup, useBettingContext } from "@/context";
 
 export default function Home() {
-  // State for selected filters and sort option
-  const [selectedSport, setSelectedSport] = useState<string>("all");
-  const [selectedLeague, setSelectedLeague] = useState<string>("all");
-  const [selectedMarket, setSelectedMarket] = useState<string>("h2h");
-  const [sortOption, setSortOption] = useState<SortOption>("profit");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { sports, isGetSportsLoading, fetchSports } = useGetSports();
+  const { sportsOdds: games, isOddsLoading, fetchSportsOdds } = useGetSportsOdds();
+  const { state, dispatch } = useBettingContext();
+  const { filter: { selectedLeague, selectedMarket } } = state;
+  useEffect(() => {
+    fetchSports();
+  }, []);
 
-  // Handle sport selection change
-  const handleSportChange = (sportId: string) => {
-    setIsLoading(true);
-    setSelectedSport(sportId);
-    // Loading will be handled by the ArbitrageGrid component
-    setTimeout(() => setIsLoading(false), 100);
-  };
+  useEffect(() => {
+    if (sports.length > 0) {
+      const sportGroups = sports.reduce(
+        (acc, sport) => {
+          if (!acc[sport.group]) {
+            acc[sport.group] = [];
+          }
+          acc[sport.group].push(sport);
+          return acc;
+        },
+        {} as Record<string, ApiSport[]>,
+      );
+      dispatch(setSportsGroup(sportGroups)); 
+    }
+  }, [sports]);
 
-  // Handle league selection change
-  const handleLeagueChange = (leagueId: string) => {
-    setIsLoading(true);
-    setSelectedLeague(leagueId);
-    setTimeout(() => setIsLoading(false), 100);
-  };
-
-  // Handle market selection change
-  const handleMarketChange = (market: string) => {
-    setIsLoading(true);
-    setSelectedMarket(market);
-    setTimeout(() => setIsLoading(false), 100);
-  };
-
-  // Handle sort option change
-  const handleSortChange = (option: string) => {
-    setSortOption(option as SortOption);
-  };
+  useEffect(() => {
+    if (selectedLeague && selectedMarket) {
+      fetchSportsOdds(selectedLeague, selectedMarket);
+    }
+  }, [selectedLeague, selectedMarket]);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -52,24 +48,8 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            <FilterControls
-              selectedSport={selectedSport}
-              selectedLeague={selectedLeague}
-              selectedMarket={selectedMarket}
-              sortOption={sortOption}
-              onSportChange={handleSportChange}
-              onLeagueChange={handleLeagueChange}
-              onMarketChange={handleMarketChange}
-              onSortChange={handleSortChange}
-            />
-
-            <ArbitrageGrid
-              selectedSport={selectedSport}
-              selectedLeague={selectedLeague}
-              selectedMarket={selectedMarket}
-              sortOption={sortOption}
-              isLoading={isLoading}
-            />
+            <FilterControls isSportsLoading={isGetSportsLoading} />
+            <ArbitrageGrid isLoading={isOddsLoading} games={games} />
           </div>
         </CardContent>
       </Card>
