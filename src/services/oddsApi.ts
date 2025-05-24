@@ -21,6 +21,7 @@ export const getSports = async (): Promise<SportType[]> => {
 export const getOdds = async (
   sportKey: string,
   marketType: string = "h2h",
+  oddsFormat: 'decimal' | 'american' = "decimal"
 ): Promise<GameType[]> => {
   try {
     const response = await axios.get(`${API.BASE_URL}/sports/${sportKey}/odds`, {
@@ -29,8 +30,8 @@ export const getOdds = async (
         bookmakers: BOOKMAKERS.join(","),
         includeLinks: true,
         markets: marketType,
-        oddsFormat: "decimal",
-      },  
+        oddsFormat: oddsFormat,
+      },
     });
     return response.data;
   } catch (error) {

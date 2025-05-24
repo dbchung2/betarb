@@ -17,12 +17,11 @@ const ArbitrageGrid = ({
   isLoading = false,
   games,
 }: ArbitrageGridProps) => {
-
-  const processedGames = processGamesForArbitrage(games);
+  const { state: { filter: { selectedMarket }, oddsFormat } } = useBettingContext(); // Get oddsFormat
+  const processedGames = processGamesForArbitrage(games, oddsFormat); // Pass it here
   const sortedGames = [...processedGames].sort((a, b) => {
     return (b.arbitrageProfit || 0) - (a.arbitrageProfit || 0);
   });
-  const { state: { filter: { selectedMarket } } } = useBettingContext();
 
   // Sort logic goes here
 

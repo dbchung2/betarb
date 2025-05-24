@@ -24,4 +24,9 @@ export const setSelectedMarket = (market: string): BettingAction => ({
 export const setSort = (sortOption: SortOption): BettingAction => ({
   type: 'SET_SORT',
   payload: sortOption,
-}); 
+});
+
+export const setOddsFormat = (oddsFormat: 'decimal' | 'american'): BettingAction => ({
+  type: 'SET_ODDS_FORMAT',
+  payload: oddsFormat,
+});

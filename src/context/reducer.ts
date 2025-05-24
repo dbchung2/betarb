@@ -8,6 +8,7 @@ export const initialState: BettingState = {
     selectedMarket: MARKETS[0].id,
   },
   sortOption: 'profit',
+  oddsFormat: 'decimal',
 };
 
 export const bettingReducer = (state: BettingState, action: BettingAction): BettingState => {
@@ -26,7 +27,9 @@ export const bettingReducer = (state: BettingState, action: BettingAction): Bett
       return { ...state, filter: { ...state.filter, selectedMarket: action.payload } };
     case 'SET_SORT':
       return { ...state, sortOption: action.payload };
+    case 'SET_ODDS_FORMAT':
+      return { ...state, oddsFormat: action.payload };
     default:
       return state;
   }
-}; 
+};

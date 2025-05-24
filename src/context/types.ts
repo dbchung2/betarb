@@ -9,6 +9,7 @@ export interface BettingState {
     selectedMarket: string;
   };
   sortOption: SortOption;
+  oddsFormat: 'decimal' | 'american';
 }
 
 export type BettingAction =
@@ -16,4 +17,5 @@ export type BettingAction =
   | { type: 'SET_SPORT'; payload: string }
   | { type: 'SET_LEAGUE'; payload: string }
   | { type: 'SET_MARKET'; payload: string }
-  | { type: 'SET_SORT'; payload: SortOption }; 
+  | { type: 'SET_SORT'; payload: SortOption }
+  | { type: 'SET_ODDS_FORMAT'; payload: 'decimal' | 'american' };

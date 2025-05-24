@@ -9,7 +9,7 @@ import {
 import { Button } from "./ui/button";
 import { ArrowUpDown, Clock, Percent } from "lucide-react";
 import { MARKETS } from "@/const";
-import { useBettingContext, setSelectedSport, setSelectedLeague, setSelectedMarket, setSort } from "@/context";
+import { useBettingContext, setSelectedSport, setSelectedLeague, setSelectedMarket, setSort, setOddsFormat } from "@/context";
 
 interface FilterControlsProps {
   isSportsLoading: boolean;
@@ -20,7 +20,7 @@ const FilterControls = ({
 }: FilterControlsProps) => {
   const { state, dispatch } = useBettingContext();
   const markets = MARKETS;
-  const { sportsGroup , filter: { selectedSport, selectedLeague } } = state;
+  const { sportsGroup , filter: { selectedSport, selectedLeague }, oddsFormat } = state;
   const listOfSports = Object.keys(sportsGroup);
   const listOfLeagues = sportsGroup[selectedSport] || [];
 
@@ -41,12 +41,16 @@ const FilterControls = ({
     dispatch(setSort(value as any));
   };
 
+  const handleOddsFormatChange = (format: 'decimal' | 'american') => {
+    dispatch(setOddsFormat(format));
+  };
+
   return (
     <div
       className={`w-full p-4 bg-background border-b flex flex-col gap-4`}
     >
       <div className="flex flex-col md:flex-row items-center gap-4 w-full">
-        <div className="w-full md:w-1/3">
+        <div className="w-full md:w-1/4">
           <label className="text-sm font-medium mb-1 block">
             Sport Category
           </label>
@@ -70,7 +74,7 @@ const FilterControls = ({
           </Select>
         </div>
 
-        <div className="w-full md:w-1/3">
+        <div className="w-full md:w-1/4">
           <label className="text-sm font-medium mb-1 block">League</label>
           <Select
             value={selectedLeague}
@@ -98,7 +102,7 @@ const FilterControls = ({
           </Select>
         </div>
 
-        <div className="w-full md:w-1/3">
+        <div className="w-full md:w-1/4">
           <label className="text-sm font-medium mb-1 block">Market Type</label>
           <Select value={state.filter.selectedMarket} onValueChange={handleMarketChange}>
             <SelectTrigger className="w-full">
@@ -110,6 +114,24 @@ const FilterControls = ({
                   {market.name}
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="w-full md:w-1/4">
+          <label className="text-sm font-medium mb-1 block">
+            Odds Format
+          </label>
+          <Select
+            value={oddsFormat}
+            onValueChange={handleOddsFormatChange}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select Odds Format" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="decimal">Decimal</SelectItem>
+              <SelectItem value="american">American</SelectItem>
             </SelectContent>
           </Select>
         </div>
