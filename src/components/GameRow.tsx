@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useBettingContext } from "@/context";
+import { formatDisplayOdds, formatArbit梖OddsForDisplay } from "../utils/oddsUtils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -39,6 +41,7 @@ const GameRow = ({
   marketType = "h2h",
 }: GameRowProps) => {
   const [expanded, setExpanded] = useState(false);
+  const { state } = useBettingContext();
 
   // Format date for display
   const formattedDate = new Date(startTime).toLocaleString();
@@ -109,7 +112,7 @@ const GameRow = ({
                     <div>
                       <div className="text-xs text-gray-500">{homeTeam}</div>
                       <div className="font-semibold">
-                        {bookmaker.odds.home.toFixed(2)}
+                        {formatDisplayOdds(bookmaker.odds.home, state.oddsFormat)}
                         {bookmaker.odds.point !== undefined && (
                           <span className="text-gray-500 ml-1">
                             ({bookmaker.odds.point > 0 ? "+" : ""}{bookmaker.odds.point})
@@ -120,7 +123,7 @@ const GameRow = ({
                     <div>
                       <div className="text-xs text-gray-500">{awayTeam}</div>
                       <div className="font-semibold">
-                        {bookmaker.odds.away.toFixed(2)}
+                        {formatDisplayOdds(bookmaker.odds.away, state.oddsFormat)}
                         {bookmaker.odds.point !== undefined && (
                           <span className="text-gray-500 ml-1">
                             ({bookmaker.odds.point > 0 ? "+" : ""}{bookmaker.odds.point})
@@ -132,7 +135,7 @@ const GameRow = ({
                       <div>
                         <div className="text-xs text-gray-500">Draw</div>
                         <div className="font-semibold">
-                          {bookmaker.odds.draw.toFixed(2)}
+                          {formatDisplayOdds(bookmaker.odds.draw, state.oddsFormat)}
                         </div>
                       </div>
                     )}
@@ -172,7 +175,7 @@ const GameRow = ({
                       <span>
                         Odds:{" "}
                         <span className="font-semibold">
-                          {bet.odds.toFixed(2)}
+                          {formatArbit梖OddsForDisplay(bet.odds, state.oddsFormat)}
                         </span>
                         {bet.point !== undefined && (
                           <span className="text-gray-500 ml-1">

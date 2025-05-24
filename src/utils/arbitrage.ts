@@ -1,7 +1,16 @@
 import { GameType, GameWithArbitrageType, ArbitrageOpportunityType, OutcomeType } from "../types/odds";
 
+const convertAmericanToDecimal = (americanOdds: number): number => {
+  if (americanOdds > 0) {
+    return (americanOdds / 100) + 1;
+  } else if (americanOdds < 0) {
+    return (100 / Math.abs(americanOdds)) + 1;
+  }
+  return 1; // Should not happen with valid odds
+};
+
 // Calculate arbitrage for h2h (moneyline) markets
-const calculateH2HArbitrage = (game: GameType): GameWithArbitrageType => {
+const calculateH2HArbitrage = (game: GameType, oddsFormat: 'decimal' | 'american'): GameWithArbitrageType => {
   const result: GameWithArbitrageType = {
     ...game,
     hasArbitrage: false,
@@ -15,10 +24,16 @@ const calculateH2HArbitrage = (game: GameType): GameWithArbitrageType => {
     if (!market) return;
 
     market.outcomes.forEach((outcome) => {
-      if (!bestOdds[outcome.name] || outcome.price > bestOdds[outcome.name].odds) {
+      let price = outcome.price;
+      if (oddsFormat === 'american') {
+        price = convertAmericanToDecimal(outcome.price);
+      }
+      if (!bestOdds[outcome.name] || price > bestOdds[outcome.name].odds) {
         bestOdds[outcome.name] = {
-          odds: outcome.price,
+          odds: price, // Store decimal odds
           bookmaker: bookmaker.title,
+          // Optionally store original American odds if needed for display later
+          // originalAmericanOdds: oddsFormat === 'american' ? outcome.price : undefined 
         };
       }
     });
@@ -64,7 +79,7 @@ const calculateH2HArbitrage = (game: GameType): GameWithArbitrageType => {
 };
 
 // Calculate arbitrage for points-based markets (spreads/totals)
-const calculatePointsArbitrage = (game: GameType): GameWithArbitrageType => {
+const calculatePointsArbitrage = (game: GameType, oddsFormat: 'decimal' | 'american'): GameWithArbitrageType => {
   const result: GameWithArbitrageType = {
     ...game,
     hasArbitrage: false,
@@ -100,10 +115,15 @@ const calculatePointsArbitrage = (game: GameType): GameWithArbitrageType => {
     const bestOdds: Record<string, { odds: number; bookmaker: string }> = {};
     
     outcomes.forEach(({ bookmaker, outcome }) => {
-      if (!bestOdds[outcome.name] || outcome.price > bestOdds[outcome.name].odds) {
+      let price = outcome.price;
+      if (oddsFormat === 'american') {
+        price = convertAmericanToDecimal(outcome.price);
+      }
+      if (!bestOdds[outcome.name] || price > bestOdds[outcome.name].odds) {
         bestOdds[outcome.name] = {
-          odds: outcome.price,
+          odds: price, // Store decimal odds
           bookmaker: bookmaker,
+          // originalAmericanOdds: oddsFormat === 'american' ? outcome.price : undefined
         };
       }
     });
@@ -157,7 +177,7 @@ const calculatePointsArbitrage = (game: GameType): GameWithArbitrageType => {
 };
 
 // Main arbitrage calculation function that delegates to the appropriate helper
-export const calculateArbitrage = (game: GameType): GameWithArbitrageType => {
+export const calculateArbitrage = (game: GameType, oddsFormat: 'decimal' | 'american'): GameWithArbitrageType => {
   // Need at least 2 bookmakers to compare
   if (game.bookmakers.length < 2) {
     return {
@@ -170,12 +190,13 @@ export const calculateArbitrage = (game: GameType): GameWithArbitrageType => {
   const firstMarket = game.bookmakers[0]?.markets[0];
   const isPointsMarket = firstMarket?.outcomes.some(outcome => outcome.point !== undefined);
 
-  return isPointsMarket ? calculatePointsArbitrage(game) : calculateH2HArbitrage(game);
+  return isPointsMarket ? calculatePointsArbitrage(game, oddsFormat) : calculateH2HArbitrage(game, oddsFormat);
 };
 
 // Process games to identify arbitrage opportunities
 export const processGamesForArbitrage = (
   games: GameType[],
+  oddsFormat: 'decimal' | 'american'
 ): GameWithArbitrageType[] => {
-  return games.map((game) => calculateArbitrage(game));
-}; 
+  return games.map((game) => calculateArbitrage(game, oddsFormat));
+};
